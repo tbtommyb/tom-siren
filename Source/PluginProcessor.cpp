@@ -10,20 +10,24 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "SineOsc.h"
+#include "WavetableOsc.h"
+#include "LFO.h"
 
 //==============================================================================
 TomSirenAudioProcessor::TomSirenAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  AudioChannelSet::stereo(), true)
-                      #endif
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
-                     #endif
-                       )
+                       ),
+        mainProcessor(new AudioProcessorGraph()),
+        lfoFreq(new AudioParameterFloat("lfo_freq",
+                                        "LFO Freq",
+                                        NormalisableRange<float>(0.0f, 10000.0f),
+                                        200.0f))
 #endif
 {
+    addParameter(lfoFreq);
 }
 
 TomSirenAudioProcessor::~TomSirenAudioProcessor()
@@ -92,70 +96,110 @@ void TomSirenAudioProcessor::changeProgramName (int index, const String& newName
 {
 }
 
-//==============================================================================
 void TomSirenAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    mainProcessor->setPlayConfigDetails(getMainBusNumInputChannels(),
+                                        getMainBusNumOutputChannels(),
+                                        sampleRate, samplesPerBlock);
+    
+    mainProcessor->prepareToPlay(sampleRate, samplesPerBlock);
+    
+    initialiseGraph();
 }
 
 void TomSirenAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    mainProcessor->releaseResources();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool TomSirenAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    ignoreUnused (layouts);
-    return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
+    if (layouts.getMainOutputChannelSet() == AudioChannelSet::disabled()) {
+        return false;
+    }
     if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
+        && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo()) {
         return false;
-
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
-
-    return true;
-  #endif
+    }
+    return layouts.getMainInputChannelSet() == layouts.getMainOutputChannelSet();
 }
 #endif
 
 void TomSirenAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); i++)
     {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
+        buffer.clear(i, 0, buffer.getNumSamples());
     }
+    
+    mainProcessor->processBlock(buffer, midiMessages);
+}
+    
+//    ScopedNoDenormals noDenormals;
+//    auto totalNumInputChannels  = getTotalNumInputChannels();
+//    auto totalNumOutputChannels = getTotalNumOutputChannels();
+//
+//    MidiBuffer processedMidi;
+//    int time;
+//    MidiMessage m;
+//
+//    for (MidiBuffer::Iterator i{midiMessages}; i.getNextEvent(m, time);)
+//    {
+//        if (m.isNoteOn())
+//        {
+//            uint8 newVel = (uint8)noteOnVel;
+//            m = MidiMessage::noteOn(m.getChannel(), m.getNoteNumber(), newVel);
+//        }
+//        else if (m.isNoteOff())
+//        {
+//        }
+//        else if (m.isAftertouch())
+//        {
+//        }
+//        else if (m.isPitchWheel())
+//        {
+//        }
+//
+//        processedMidi.addEvent(m, time);
+//    }
+//    midiMessages.swapWith(processedMidi);
+//
+//    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+//        buffer.clear (i, 0, buffer.getNumSamples());
+//
+//    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+//    {
+//        auto* channelData = buffer.getWritePointer (channel);
+//    }
+
+void TomSirenAudioProcessor::initialiseGraph()
+{
+    mainProcessor->clear();
+    
+    audioOutputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::audioOutputNode));
+    midiInputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::midiInputNode));
+    midiOutputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::midiOutputNode));
+    lfoNode = mainProcessor->addNode(new LFO());
+    
+    for (int channel = 0; channel < 2; channel++)
+    {
+        mainProcessor->addConnection({ { lfoNode->nodeID, channel },
+                                       { audioOutputNode->nodeID, channel }
+        });
+    }
+}
+
+void TomSirenAudioProcessor::connectAudioNodes()
+{
+}
+
+void TomSirenAudioProcessor::connectMidiNodes()
+{
+    mainProcessor->addConnection({
+        { midiInputNode->nodeID, AudioProcessorGraph::midiChannelIndex},
+        { midiOutputNode->nodeID, AudioProcessorGraph::midiChannelIndex}
+    });
 }
 
 //==============================================================================

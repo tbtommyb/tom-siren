@@ -18,6 +18,10 @@
 class TomSirenAudioProcessor  : public AudioProcessor
 {
 public:
+    using AudioGraphIOProcessor = AudioProcessorGraph::AudioGraphIOProcessor;
+    
+    float noteOnVel;
+
     //==============================================================================
     TomSirenAudioProcessor();
     ~TomSirenAudioProcessor();
@@ -56,6 +60,20 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    std::unique_ptr<AudioProcessorGraph> mainProcessor;
+    
+    void initialiseGraph();
+    void connectAudioNodes();
+    void connectMidiNodes();
+    
+    AudioProcessorGraph::Node::Ptr audioOutputNode;
+    AudioProcessorGraph::Node::Ptr midiInputNode;
+    AudioProcessorGraph::Node::Ptr midiOutputNode;
+    
+    AudioProcessorGraph::Node::Ptr lfoNode;
+    
+    AudioParameterFloat* lfoFreq;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TomSirenAudioProcessor)
 };
