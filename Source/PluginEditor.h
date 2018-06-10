@@ -12,6 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "LFO.h"
 
 //==============================================================================
 /**
@@ -33,7 +34,7 @@ private:
     // access the processor object that created it.
     TomSirenAudioProcessor& processor;
     
-    Slider midiVolume;
+    Slider lfoFreq;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TomSirenAudioProcessorEditor)
 };

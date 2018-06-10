@@ -20,6 +20,7 @@ public:
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages) override;
     void reset() override;
+    void setFrequency(float freq);
 private:
     dsp::Oscillator<float> oscillator;
 };

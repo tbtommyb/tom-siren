@@ -10,9 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "SineOsc.h"
-#include "WavetableOsc.h"
-#include "LFO.h"
+
 
 //==============================================================================
 TomSirenAudioProcessor::TomSirenAudioProcessor()
@@ -225,6 +223,11 @@ void TomSirenAudioProcessor::setStateInformation (const void* data, int sizeInBy
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+AudioProcessorGraph::Node::Ptr TomSirenAudioProcessor::getProcessorNode(int index)
+{
+    return mainProcessor->getNode(index);
 }
 
 //==============================================================================

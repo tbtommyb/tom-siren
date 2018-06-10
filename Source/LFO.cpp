@@ -33,3 +33,9 @@ void LFO::reset()
 {
     oscillator.reset();
 }
+
+void LFO::setFrequency(float freq)
+{
+    oscillator.setFrequency(freq);
+}
+
