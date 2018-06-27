@@ -59,9 +59,6 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-    
-    AudioProcessorGraph::Node::Ptr getProcessorNode(int index);
-    AudioProcessorGraph::Node::Ptr lfoNode;
 
 private:
     std::unique_ptr<AudioProcessorGraph> mainProcessor;
@@ -70,13 +67,13 @@ private:
     void connectAudioNodes();
     void connectMidiNodes();
     
+    AudioProcessorGraph::Node::Ptr lfoNode;
 
     AudioProcessorGraph::Node::Ptr audioOutputNode;
     AudioProcessorGraph::Node::Ptr midiInputNode;
     AudioProcessorGraph::Node::Ptr midiOutputNode;
     
-    
-    AudioParameterFloat* lfoFreq;
+    AudioProcessorValueTreeState parameters;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TomSirenAudioProcessor)

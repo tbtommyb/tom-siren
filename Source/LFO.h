@@ -12,7 +12,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "ProcessorBase.h"
 
-class LFO : public ProcessorBase
+class LFO : public ProcessorBase, public AudioProcessorValueTreeState::Listener
 {
 public:
     LFO();
@@ -20,7 +20,7 @@ public:
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages) override;
     void reset() override;
-    void setFrequency(float freq);
+    void parameterChanged(const String& parameterID, float newValue) override;
 private:
     dsp::Oscillator<float> oscillator;
 };

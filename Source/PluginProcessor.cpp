@@ -19,13 +19,13 @@ TomSirenAudioProcessor::TomSirenAudioProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                        ),
         mainProcessor(new AudioProcessorGraph()),
-        lfoFreq(new AudioParameterFloat("lfo_freq",
-                                        "LFO Freq",
-                                        NormalisableRange<float>(0.0f, 10000.0f),
-                                        200.0f))
+        parameters(*this, nullptr)
 #endif
 {
-    addParameter(lfoFreq);
+
+    parameters.createAndAddParameter("lfo_freq", "LFO Freq", String(), NormalisableRange<float>(1.0f, 10000.0f), 200.0f, nullptr, nullptr);
+    parameters.state = ValueTree(Identifier("LFOFreq"));
+
 }
 
 TomSirenAudioProcessor::~TomSirenAudioProcessor()
@@ -96,18 +96,22 @@ void TomSirenAudioProcessor::changeProgramName (int index, const String& newName
 
 void TomSirenAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    mainProcessor->setPlayConfigDetails(getMainBusNumInputChannels(),
-                                        getMainBusNumOutputChannels(),
-                                        sampleRate, samplesPerBlock);
-    
-    mainProcessor->prepareToPlay(sampleRate, samplesPerBlock);
-    
-    initialiseGraph();
+    if (lfoNode == nullptr) {
+        mainProcessor->setPlayConfigDetails(getMainBusNumInputChannels(),
+                                            getMainBusNumOutputChannels(),
+                                            sampleRate, samplesPerBlock);
+        
+        mainProcessor->prepareToPlay(sampleRate, samplesPerBlock);
+        initialiseGraph();
+    }
 }
 
 void TomSirenAudioProcessor::releaseResources()
 {
+    std::cout << "releasing resources" << std::endl;
+    parameters.removeParameterListener("lfo_freq", static_cast<LFO*>(lfoNode->getProcessor()));
     mainProcessor->releaseResources();
+    lfoNode = nullptr;
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -126,6 +130,7 @@ bool TomSirenAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
 
 void TomSirenAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+    
     for (int i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); i++)
     {
         buffer.clear(i, 0, buffer.getNumSamples());
@@ -133,63 +138,32 @@ void TomSirenAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffe
     
     mainProcessor->processBlock(buffer, midiMessages);
 }
-    
-//    ScopedNoDenormals noDenormals;
-//    auto totalNumInputChannels  = getTotalNumInputChannels();
-//    auto totalNumOutputChannels = getTotalNumOutputChannels();
-//
-//    MidiBuffer processedMidi;
-//    int time;
-//    MidiMessage m;
-//
-//    for (MidiBuffer::Iterator i{midiMessages}; i.getNextEvent(m, time);)
-//    {
-//        if (m.isNoteOn())
-//        {
-//            uint8 newVel = (uint8)noteOnVel;
-//            m = MidiMessage::noteOn(m.getChannel(), m.getNoteNumber(), newVel);
-//        }
-//        else if (m.isNoteOff())
-//        {
-//        }
-//        else if (m.isAftertouch())
-//        {
-//        }
-//        else if (m.isPitchWheel())
-//        {
-//        }
-//
-//        processedMidi.addEvent(m, time);
-//    }
-//    midiMessages.swapWith(processedMidi);
-//
-//    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-//        buffer.clear (i, 0, buffer.getNumSamples());
-//
-//    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-//    {
-//        auto* channelData = buffer.getWritePointer (channel);
-//    }
 
 void TomSirenAudioProcessor::initialiseGraph()
 {
+    std::cout << "CALLING INIT GRAPH" << std::endl;
     mainProcessor->clear();
     
     audioOutputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::audioOutputNode));
     midiInputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::midiInputNode));
     midiOutputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::midiOutputNode));
-    lfoNode = mainProcessor->addNode(new LFO());
     
-    for (int channel = 0; channel < 2; channel++)
-    {
-        mainProcessor->addConnection({ { lfoNode->nodeID, channel },
-                                       { audioOutputNode->nodeID, channel }
-        });
-    }
+    connectAudioNodes();
+    connectMidiNodes();
 }
 
 void TomSirenAudioProcessor::connectAudioNodes()
 {
+    lfoNode = mainProcessor->addNode(new LFO());
+    
+    parameters.addParameterListener("lfo_freq", static_cast<LFO*>(lfoNode->getProcessor()));
+    
+    for (int channel = 0; channel < 2; channel++)
+    {
+        mainProcessor->addConnection({ { lfoNode->nodeID, channel },
+            { audioOutputNode->nodeID, channel }
+        });
+    }
 }
 
 void TomSirenAudioProcessor::connectMidiNodes()
@@ -198,6 +172,10 @@ void TomSirenAudioProcessor::connectMidiNodes()
         { midiInputNode->nodeID, AudioProcessorGraph::midiChannelIndex},
         { midiOutputNode->nodeID, AudioProcessorGraph::midiChannelIndex}
     });
+    
+//    for (auto node : mainProcessor->getNodes()) {
+//        node->getProcessor()->enableAllBuses();
+//    }
 }
 
 //==============================================================================
@@ -208,7 +186,7 @@ bool TomSirenAudioProcessor::hasEditor() const
 
 AudioProcessorEditor* TomSirenAudioProcessor::createEditor()
 {
-    return new TomSirenAudioProcessorEditor (*this);
+    return new TomSirenAudioProcessorEditor (*this, parameters);
 }
 
 //==============================================================================
@@ -223,11 +201,6 @@ void TomSirenAudioProcessor::setStateInformation (const void* data, int sizeInBy
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
-}
-
-AudioProcessorGraph::Node::Ptr TomSirenAudioProcessor::getProcessorNode(int index)
-{
-    return mainProcessor->getNode(index);
 }
 
 //==============================================================================
