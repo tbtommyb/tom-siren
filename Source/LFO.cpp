@@ -13,6 +13,7 @@
 
 LFO::LFO()
 {
+    std::cout << "CREATING OSCILLATOR ***************" << std::endl;
     oscillator.setFrequency(200.0);
     oscillator.initialise([] (float x) { return std::sin(x); });
 }
@@ -38,12 +39,7 @@ void LFO::reset()
 void LFO::parameterChanged(const String& parameterID, float newValue)
 {
     if (parameterID == "lfo_freq") {
-        std::cout << "parameter Id: " << parameterID << std::endl;
-        std::cout << "newValue: " << newValue << std::endl;
-        std::cout << "listener called" << std::endl;
         oscillator.setFrequency(newValue);
-        std::cout << "after called" << std::endl;
-        std::cout << oscillator.getFrequency() << std::endl;
     }
 }
 

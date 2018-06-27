@@ -11,7 +11,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-
 //==============================================================================
 TomSirenAudioProcessor::TomSirenAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -108,7 +107,7 @@ void TomSirenAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
 void TomSirenAudioProcessor::releaseResources()
 {
-    std::cout << "releasing resources" << std::endl;
+    
     parameters.removeParameterListener("lfo_freq", static_cast<LFO*>(lfoNode->getProcessor()));
     mainProcessor->releaseResources();
     lfoNode = nullptr;
@@ -141,7 +140,6 @@ void TomSirenAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffe
 
 void TomSirenAudioProcessor::initialiseGraph()
 {
-    std::cout << "CALLING INIT GRAPH" << std::endl;
     mainProcessor->clear();
     
     audioOutputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::audioOutputNode));
@@ -172,10 +170,6 @@ void TomSirenAudioProcessor::connectMidiNodes()
         { midiInputNode->nodeID, AudioProcessorGraph::midiChannelIndex},
         { midiOutputNode->nodeID, AudioProcessorGraph::midiChannelIndex}
     });
-    
-//    for (auto node : mainProcessor->getNodes()) {
-//        node->getProcessor()->enableAllBuses();
-//    }
 }
 
 //==============================================================================
