@@ -13,7 +13,7 @@
 
 //==============================================================================
 TomSirenAudioProcessorEditor::TomSirenAudioProcessorEditor (TomSirenAudioProcessor& p, AudioProcessorValueTreeState& vts)
-    : AudioProcessorEditor (&p), processor (p), valueTreeState(vts)
+    : AudioProcessorEditor (p), processor (p), valueTreeState(vts)
 {
     setSize (400, 300);
     
@@ -23,9 +23,7 @@ TomSirenAudioProcessorEditor::TomSirenAudioProcessorEditor (TomSirenAudioProcess
     lfoFreqAttachment.reset(new SliderAttachment(valueTreeState, "lfo_freq", lfoFreq));
 }
 
-TomSirenAudioProcessorEditor::~TomSirenAudioProcessorEditor()
-{
-}
+TomSirenAudioProcessorEditor::~TomSirenAudioProcessorEditor() { }
 
 //==============================================================================
 void TomSirenAudioProcessorEditor::paint (Graphics& g)

@@ -15,8 +15,7 @@
 #include "LFO.h"
 
 //==============================================================================
-/**
-*/
+
 class TomSirenAudioProcessorEditor  : public AudioProcessorEditor
 {
 public:

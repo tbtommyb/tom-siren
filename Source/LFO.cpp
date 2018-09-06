@@ -8,27 +8,25 @@
   ==============================================================================
 */
 
-#include <iostream>
 #include "LFO.h"
 
 LFO::LFO()
 {
-    std::cout << "CREATING OSCILLATOR ***************" << std::endl;
-    oscillator.setFrequency(200.0);
-    oscillator.initialise([] (float x) { return std::sin(x); });
+    oscillator.setFrequency (440.0f);
+    oscillator.initialise ([] (float x) { return std::sin (x); });
 }
 
 void LFO::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    dsp::ProcessSpec spec { sampleRate, static_cast<uint32>(samplesPerBlock) };
-    oscillator.prepare(spec);
+    dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock) };
+    oscillator.prepare (spec);
 }
 
-void LFO::processBlock(AudioSampleBuffer &buffer, juce::MidiBuffer &midiMessages)
+void LFO::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
 {
-    dsp::AudioBlock<float> block(buffer);
-    dsp::ProcessContextReplacing<float> context(block);
-    oscillator.process(context);
+    dsp::AudioBlock<float> block (buffer);
+    dsp::ProcessContextReplacing<float> context (block);
+    oscillator.process (context);
 }
 
 void LFO::reset()
@@ -42,4 +40,3 @@ void LFO::parameterChanged(const String& parameterID, float newValue)
         oscillator.setFrequency(newValue);
     }
 }
-
