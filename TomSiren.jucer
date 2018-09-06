@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT name="TomSiren" projectType="audioplug" buildStandalone="0" jucerVersion="5.3.2"
-              pluginFormats="buildVST3,buildAU" buildVST="0" buildVST3="1"
-              buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0"
-              pluginVST3Category="Instrument" cppLanguageStandard="14" pluginManufacturer="Tom"
-              aaxIdentifier="com.tom.tomSiren" pluginAUMainType="'aumu'" pluginVSTCategory="kPlugCategGenerator"
+              pluginFormats="buildVST,buildAU" buildVST="1" buildVST3="0" buildAU="1"
+              buildAUv3="0" buildRTAS="0" buildAAX="0" enableIAA="0" pluginVST3Category="Instrument"
+              cppLanguageStandard="14" pluginManufacturer="Tom" aaxIdentifier="com.tom.tomSiren"
+              pluginAUMainType="'aumu'" pluginVSTCategory="kPlugCategGenerator"
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
               id="FFavbB">
   <MAINGROUP id="b1E3nG" name="TomSiren">
     <GROUP id="{2F9E1AAE-E765-2AF7-03D2-2AD2D983A130}" name="Source">
       <FILE id="zjSrnt" name="ProcessorBase.h" compile="0" resource="0" file="Source/ProcessorBase.h"/>
-      <FILE id="WOPTPf" name="LFO.cpp" compile="1" resource="0" file="Source/LFO.cpp"/>
-      <FILE id="dusp1n" name="LFO.h" compile="0" resource="0" file="Source/LFO.h"/>
-      <FILE id="Kjg7Jn" name="SineOsc.cpp" compile="1" resource="0" file="Source/SineOsc.cpp"/>
-      <FILE id="ECltVD" name="SineOsc.h" compile="0" resource="0" file="Source/SineOsc.h"/>
-      <FILE id="N6JuGG" name="WavetableOsc.cpp" compile="1" resource="0"
-            file="Source/WavetableOsc.cpp"/>
-      <FILE id="XtcQAB" name="WavetableOsc.h" compile="0" resource="0" file="Source/WavetableOsc.h"/>
+      <FILE id="WOPTPf" name="Oscillator.cpp" compile="1" resource="0" file="Source/Oscillator.cpp"/>
+      <FILE id="dusp1n" name="Oscillator.h" compile="0" resource="0" file="Source/Oscillator.h"/>
       <FILE id="HWmwz8" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="pLWi6o" name="PluginProcessor.h" compile="0" resource="0"

@@ -8,33 +8,33 @@
   ==============================================================================
 */
 
-#include "LFO.h"
+#include "Oscillator.h"
 
-LFO::LFO()
+Oscillator::Oscillator()
 {
     oscillator.setFrequency (440.0f);
     oscillator.initialise ([] (float x) { return std::sin (x); });
 }
 
-void LFO::prepareToPlay(double sampleRate, int samplesPerBlock)
+void Oscillator::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock) };
     oscillator.prepare (spec);
 }
 
-void LFO::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
+void Oscillator::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
 {
     dsp::AudioBlock<float> block (buffer);
     dsp::ProcessContextReplacing<float> context (block);
     oscillator.process (context);
 }
 
-void LFO::reset()
+void Oscillator::reset()
 {
     oscillator.reset();
 }
 
-void LFO::parameterChanged(const String& parameterID, float newValue)
+void Oscillator::parameterChanged(const String& parameterID, float newValue)
 {
     if (parameterID == "lfo_freq") {
         oscillator.setFrequency(newValue);

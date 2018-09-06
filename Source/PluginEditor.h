@@ -12,7 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
-#include "LFO.h"
+#include "Oscillator.h"
 
 //==============================================================================
 

@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    LFO.h
+    Oscillator.h
     Created: 6 May 2018 11:00:07am
     Author:  Thomas Barrett
 
@@ -12,10 +12,10 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "ProcessorBase.h"
 
-class LFO : public ProcessorBase, public AudioProcessorValueTreeState::Listener
+class Oscillator : public ProcessorBase, public AudioProcessorValueTreeState::Listener
 {
 public:
-    LFO();
+    Oscillator();
     const String getName() const override { return "LFO"; }
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages) override;

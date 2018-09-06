@@ -11,7 +11,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "LFO.h"
+#include "Oscillator.h"
 
 //==============================================================================
 /**
