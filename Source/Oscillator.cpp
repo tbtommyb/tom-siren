@@ -10,7 +10,8 @@
 
 #include "Oscillator.h"
 
-Oscillator::Oscillator()
+Oscillator::Oscillator(const String& identifier, const String& name)
+: identifier(identifier), name(name)
 {
     oscillator.setFrequency (440.0f);
     oscillator.initialise ([] (float x) { return std::sin (x); });
@@ -36,7 +37,7 @@ void Oscillator::reset()
 
 void Oscillator::parameterChanged(const String& parameterID, float newValue)
 {
-    if (parameterID == "lfo_freq") {
+    if (parameterID == identifier) {
         oscillator.setFrequency(newValue);
     }
 }

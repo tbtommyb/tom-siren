@@ -19,8 +19,9 @@ TomSirenAudioProcessor::TomSirenAudioProcessor()
         mainProcessor(new AudioProcessorGraph()),
         parameters(*this, nullptr)
 {
-    parameters.createAndAddParameter("lfo_freq", "LFO Freq", String(), NormalisableRange<float>(1.0f, 10000.0f), 440.0f, nullptr, nullptr);
-    parameters.state = ValueTree(Identifier("LFOFreq"));
+    parameters.createAndAddParameter("lfo_freq", "LFO Freq", String(), NormalisableRange<float>(1.0f, 100.0f), 10.0f, nullptr, nullptr);
+    parameters.createAndAddParameter("base_freq", "Base Freq", String(), NormalisableRange<float>(20.0f, 1000.0f), 440.0f, nullptr, nullptr);
+    parameters.state = ValueTree(Identifier("Dub"));
 }
 
 TomSirenAudioProcessor::~TomSirenAudioProcessor() { }
@@ -50,7 +51,8 @@ void TomSirenAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
 void TomSirenAudioProcessor::releaseResources()
 {
-    parameters.removeParameterListener("lfo_freq", static_cast<Oscillator*>(lfoNode->getProcessor()));
+    //parameters.removeParameterListener("lfo_freq", static_cast<Oscillator*>(lfoNode->getProcessor()));
+    parameters.removeParameterListener("base_freq", static_cast<Oscillator*>((baseNode->getProcessor())));
     mainProcessor->releaseResources();
 }
 
@@ -78,15 +80,21 @@ void TomSirenAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffe
 
 void TomSirenAudioProcessor::initialiseGraph()
 {
+    // pass parameter ID into Oscillator so it knows what to listen for
+    // LFO doesn't need to be part of audio graph
     mainProcessor->clear();
     
     audioOutputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::audioOutputNode));
     midiInputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::midiInputNode));
     midiOutputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::midiOutputNode));
-    lfoNode = mainProcessor->addNode(new Oscillator());
     
-    lfoNode->getProcessor()->enableAllBuses();
-    parameters.addParameterListener("lfo_freq", static_cast<Oscillator*>(lfoNode->getProcessor()));
+    // lfoNode = new Oscillator{};
+    baseNode = mainProcessor->addNode(new Oscillator("base_freq", "Base Freq"));
+    
+    //lfoNode->getProcessor()->enableAllBuses();
+    baseNode->getProcessor()->enableAllBuses();
+    //parameters.addParameterListener("lfo_freq", lfoNode);
+    parameters.addParameterListener("base_freq", static_cast<Oscillator*>(baseNode->getProcessor()));
     
     connectAudioNodes();
     connectMidiNodes();
@@ -97,7 +105,7 @@ void TomSirenAudioProcessor::connectAudioNodes()
     for (int channel = 0; channel < 2; ++channel)
     {
         mainProcessor->addConnection({
-            { lfoNode->nodeID, channel },
+            { baseNode->nodeID, channel },
             { audioOutputNode->nodeID, channel }
         });
     }

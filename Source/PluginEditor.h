@@ -38,5 +38,9 @@ private:
     Slider lfoFreq;
     std::unique_ptr<SliderAttachment> lfoFreqAttachment;
     
+    Label baseFreqLabel;
+    Slider baseFreq;
+    std::unique_ptr<SliderAttachment> baseFreqAttachment;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TomSirenAudioProcessorEditor)
 };

@@ -55,7 +55,8 @@ private:
     void connectAudioNodes();
     void connectMidiNodes();
     
-    AudioProcessorGraph::Node::Ptr lfoNode;
+    //Oscillator lfoNode;
+    AudioProcessorGraph::Node::Ptr baseNode;
 
     AudioProcessorGraph::Node::Ptr audioOutputNode;
     AudioProcessorGraph::Node::Ptr midiInputNode;
