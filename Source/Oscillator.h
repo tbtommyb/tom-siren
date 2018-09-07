@@ -21,8 +21,10 @@ public:
     void processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages) override;
     void reset() override;
     void parameterChanged(const String& parameterID, float newValue) override;
+
 private:
     dsp::Oscillator<float> oscillator;
+    dsp::Oscillator<float> lfo;
     const String identifier;
     const String name;
 };

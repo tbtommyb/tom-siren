@@ -32,6 +32,9 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     TomSirenAudioProcessor& processor;
+    
+    // TODO listen to UI events, update valueTreeState with params
+    // LFO rate, LFO amp, base freq etc
     AudioProcessorValueTreeState& valueTreeState;
     
     Label lfoFreqLabel;
