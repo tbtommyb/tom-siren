@@ -8,50 +8,44 @@
   ==============================================================================
 */
 
-#include "Oscillator.h"
+#include "Siren.h"
 #include <iostream>
 
-Oscillator::Oscillator(const String& identifier, const String& name)
+Siren::Siren(const String& identifier, const String& name)
 : identifier(identifier), name(name)
 {
-    output.setFrequency (440.0f);
-    output.initialise ([] (float x) { return std::sin (x); }, 128);
+    processorChain.template get<outputIndex>().setFrequency(440.f);
+    processorChain.template get<outputIndex>().initialise([] (float x) { return std::sin(x); }, 128);
     
-    lfo.setFrequency (4.0f);
     lfo.initialise ([] (float x) { return std::sin (x); }, 128);
-    
+    lfo.setFrequency(4.0f);
     lfoAmount = 4.0f;
     baseFreq = 440.0f;
 }
 
-void Oscillator::prepareToPlay(double sampleRate, int samplesPerBlock)
+void Siren::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock) };
-    //dsp::ProcessSpec lfoSpec { sampleRate / lfoUpdateRate, static_cast<uint32>(samplesPerBlock)};
-    output.prepare (spec);
-
-    // Using this version sounds bad
-    //lfo.prepare (lfoSpec);
-    lfo.prepare(spec);
+    processorChain.prepare (spec);
 }
 
-void Oscillator::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
+void Siren::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
 {
     auto lfoOut = lfo.processSample(0.0f);
 
-    output.setFrequency(baseFreq + (lfoOut * lfoAmount));
+    processorChain.template get<outputIndex>().setFrequency(baseFreq + (lfoOut * lfoAmount));
     dsp::AudioBlock<float> block (buffer);
     dsp::ProcessContextReplacing<float> context (block);
-    output.process (context);
-    lfo.process (context);
+    
+    processorChain.process (context);
 }
 
-void Oscillator::reset()
+void Siren::reset()
 {
-    output.reset();
+    processorChain.reset();
 }
 
-void Oscillator::parameterChanged(const String& parameterID, float newValue)
+void Siren::parameterChanged(const String& parameterID, float newValue)
 {
     if (parameterID == "base_freq") {
         baseFreq = newValue;

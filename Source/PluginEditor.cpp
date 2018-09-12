@@ -22,11 +22,14 @@ TomSirenAudioProcessorEditor::TomSirenAudioProcessorEditor (TomSirenAudioProcess
     baseFreqLabel.setText("Base Freq", dontSendNotification);
     
     addAndMakeVisible(lfoFreqLabel);
-    addAndMakeVisible(lfoAmountLabel);
-    addAndMakeVisible(baseFreqLabel);
     addAndMakeVisible(lfoFreq);
+
+    addAndMakeVisible(lfoAmountLabel);
     addAndMakeVisible(lfoAmount);
+
+    addAndMakeVisible(baseFreqLabel);
     addAndMakeVisible(baseFreq);
+    
     lfoFreqAttachment.reset(new SliderAttachment(valueTreeState, "lfo_freq", lfoFreq));
     lfoAmmountAttachment.reset(new SliderAttachment(valueTreeState, "lfo_amount", lfoAmount));
     baseFreqAttachment.reset(new SliderAttachment(valueTreeState, "base_freq", baseFreq));

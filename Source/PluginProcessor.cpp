@@ -19,8 +19,8 @@ TomSirenAudioProcessor::TomSirenAudioProcessor()
         mainProcessor(new AudioProcessorGraph()),
         parameters(*this, nullptr)
 {
-    parameters.createAndAddParameter("lfo_freq", "LFO Freq", String(), NormalisableRange<float>(0.1f, 1000.0f), 4.0f, nullptr, nullptr);
-    parameters.createAndAddParameter("lfo_amount", "LFO Amount", String(), NormalisableRange<float>(0.1f, 1000.0f), 4.0f, nullptr, nullptr);
+    parameters.createAndAddParameter("lfo_freq", "LFO Freq", String(), NormalisableRange<float>(0.1f, 100.0f), 4.0f, nullptr, nullptr);
+    parameters.createAndAddParameter("lfo_amount", "LFO Amount", String(), NormalisableRange<float>(0.1f, 100.0f), 4.0f, nullptr, nullptr);
     parameters.createAndAddParameter("base_freq", "Base Freq", String(), NormalisableRange<float>(20.0f, 2000.0f), 440.0f, nullptr, nullptr);
     parameters.state = ValueTree(Identifier("Dub"));
 }
@@ -52,9 +52,10 @@ void TomSirenAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
 void TomSirenAudioProcessor::releaseResources()
 {
-    parameters.removeParameterListener("lfo_freq", static_cast<Oscillator*>(baseNode->getProcessor()));
-    parameters.removeParameterListener("lfo_amount", static_cast<Oscillator*>(baseNode->getProcessor()));
-    parameters.removeParameterListener("base_freq", static_cast<Oscillator*>((baseNode->getProcessor())));
+    auto* siren = static_cast<Siren*>(baseNode->getProcessor());
+    parameters.removeParameterListener("lfo_freq", siren);
+    parameters.removeParameterListener("lfo_amount", siren);
+    parameters.removeParameterListener("base_freq", siren);
     mainProcessor->releaseResources();
 }
 
@@ -90,13 +91,13 @@ void TomSirenAudioProcessor::initialiseGraph()
     midiInputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::midiInputNode));
     midiOutputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::midiOutputNode));
     
-    baseNode = mainProcessor->addNode(new Oscillator("base_freq", "Base Freq"));
+    baseNode = mainProcessor->addNode(new Siren("base_freq", "Base Freq"));
     
     baseNode->getProcessor()->enableAllBuses();
     
-    parameters.addParameterListener("lfo_freq", static_cast<Oscillator*>(baseNode->getProcessor()));
-    parameters.addParameterListener("lfo_amount", static_cast<Oscillator*>(baseNode->getProcessor()));
-    parameters.addParameterListener("base_freq", static_cast<Oscillator*>(baseNode->getProcessor()));
+    parameters.addParameterListener("lfo_freq", static_cast<Siren*>(baseNode->getProcessor()));
+    parameters.addParameterListener("lfo_amount", static_cast<Siren*>(baseNode->getProcessor()));
+    parameters.addParameterListener("base_freq", static_cast<Siren*>(baseNode->getProcessor()));
 
     connectAudioNodes();
     connectMidiNodes();
