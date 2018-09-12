@@ -9,22 +9,26 @@
 */
 
 #include "Oscillator.h"
+#include <iostream>
 
 Oscillator::Oscillator(const String& identifier, const String& name)
 : identifier(identifier), name(name)
 {
-    oscillator.setFrequency (440.0f);
-    oscillator.initialise ([] (float x) { return std::sin (x); }, 128);
+    output.setFrequency (440.0f);
+    output.initialise ([] (float x) { return std::sin (x); }, 128);
     
     lfo.setFrequency (4.0f);
     lfo.initialise ([] (float x) { return std::sin (x); }, 128);
+    
+    lfoAmount = 4.0f;
+    baseFreq = 440.0f;
 }
 
 void Oscillator::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock) };
     //dsp::ProcessSpec lfoSpec { sampleRate / lfoUpdateRate, static_cast<uint32>(samplesPerBlock)};
-    oscillator.prepare (spec);
+    output.prepare (spec);
 
     // Using this version sounds bad
     //lfo.prepare (lfoSpec);
@@ -34,22 +38,23 @@ void Oscillator::prepareToPlay(double sampleRate, int samplesPerBlock)
 void Oscillator::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
 {
     auto lfoOut = lfo.processSample(0.0f);
-    oscillator.setFrequency(oscillator.getFrequency() + (lfoOut * lfoAmount));
+
+    output.setFrequency(baseFreq + (lfoOut * lfoAmount));
     dsp::AudioBlock<float> block (buffer);
     dsp::ProcessContextReplacing<float> context (block);
-    oscillator.process (context);
+    output.process (context);
     lfo.process (context);
 }
 
 void Oscillator::reset()
 {
-    oscillator.reset();
+    output.reset();
 }
 
 void Oscillator::parameterChanged(const String& parameterID, float newValue)
 {
-    if (parameterID == identifier) {
-        oscillator.setFrequency(newValue);
+    if (parameterID == "base_freq") {
+        baseFreq = newValue;
     }
     
     if (parameterID == "lfo_freq") {

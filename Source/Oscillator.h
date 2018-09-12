@@ -23,12 +23,16 @@ public:
     void parameterChanged(const String& parameterID, float newValue) override;
 
 private:
-    dsp::Oscillator<float> oscillator;
-    
+    //dsp::Oscillator<float> base;
+    dsp::Oscillator<float> output;
     dsp::Oscillator<float> lfo;
+    
     static constexpr size_t lfoUpdateRate = 100;
     size_t lfoUpdateCounter = lfoUpdateRate;
+    
+    float lfoRate;
     float lfoAmount;
+    float baseFreq;
     
     const String identifier;
     const String name;
