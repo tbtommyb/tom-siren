@@ -41,6 +41,10 @@ private:
     Slider lfoFreq;
     std::unique_ptr<SliderAttachment> lfoFreqAttachment;
     
+    Label lfoAmountLabel;
+    Slider lfoAmount;
+    std::unique_ptr<SliderAttachment> lfoAmmountAttachment;
+    
     Label baseFreqLabel;
     Slider baseFreq;
     std::unique_ptr<SliderAttachment> baseFreqAttachment;

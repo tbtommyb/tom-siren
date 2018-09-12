@@ -18,13 +18,17 @@ TomSirenAudioProcessorEditor::TomSirenAudioProcessorEditor (TomSirenAudioProcess
     setSize (400, 300);
     
     lfoFreqLabel.setText("LFO Freq", dontSendNotification);
+    lfoAmountLabel.setText("LFO Amount", dontSendNotification);
     baseFreqLabel.setText("Base Freq", dontSendNotification);
     
     addAndMakeVisible(lfoFreqLabel);
+    addAndMakeVisible(lfoAmountLabel);
     addAndMakeVisible(baseFreqLabel);
     addAndMakeVisible(lfoFreq);
+    addAndMakeVisible(lfoAmount);
     addAndMakeVisible(baseFreq);
     lfoFreqAttachment.reset(new SliderAttachment(valueTreeState, "lfo_freq", lfoFreq));
+    lfoAmmountAttachment.reset(new SliderAttachment(valueTreeState, "lfo_amount", lfoAmount));
     baseFreqAttachment.reset(new SliderAttachment(valueTreeState, "base_freq", baseFreq));
 }
 
@@ -44,8 +48,13 @@ void TomSirenAudioProcessorEditor::resized()
     auto lfoRect = r.removeFromTop(40);
     lfoFreqLabel.setBounds(lfoRect.removeFromLeft(80));
     lfoFreq.setBounds(lfoRect);
+    // TODO find the proper way to do this
+    auto lfoAmountRect = r.removeFromTop(60);
+    lfoAmountLabel.setBounds(lfoAmountRect.removeFromLeft(80));
+    lfoAmount.setBounds(lfoAmountRect);
     
     auto baseRect = r.removeFromTop(100);
     baseFreqLabel.setBounds(baseRect.removeFromLeft(80));
     baseFreq.setBounds(baseRect);
+    
 }

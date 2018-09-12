@@ -20,6 +20,7 @@ TomSirenAudioProcessor::TomSirenAudioProcessor()
         parameters(*this, nullptr)
 {
     parameters.createAndAddParameter("lfo_freq", "LFO Freq", String(), NormalisableRange<float>(0.1f, 10.0f), 4.0f, nullptr, nullptr);
+    parameters.createAndAddParameter("lfo_amount", "LFO Amount", String(), NormalisableRange<float>(0.1f, 10.0f), 4.0f, nullptr, nullptr);
     parameters.createAndAddParameter("base_freq", "Base Freq", String(), NormalisableRange<float>(20.0f, 1000.0f), 440.0f, nullptr, nullptr);
     parameters.state = ValueTree(Identifier("Dub"));
 }
@@ -52,6 +53,7 @@ void TomSirenAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 void TomSirenAudioProcessor::releaseResources()
 {
     parameters.removeParameterListener("lfo_freq", static_cast<Oscillator*>(baseNode->getProcessor()));
+    parameters.removeParameterListener("lfo_amount", static_cast<Oscillator*>(baseNode->getProcessor()));
     parameters.removeParameterListener("base_freq", static_cast<Oscillator*>((baseNode->getProcessor())));
     mainProcessor->releaseResources();
 }
@@ -93,8 +95,9 @@ void TomSirenAudioProcessor::initialiseGraph()
     baseNode->getProcessor()->enableAllBuses();
     
     parameters.addParameterListener("lfo_freq", static_cast<Oscillator*>(baseNode->getProcessor()));
+    parameters.addParameterListener("lfo_amount", static_cast<Oscillator*>(baseNode->getProcessor()));
     parameters.addParameterListener("base_freq", static_cast<Oscillator*>(baseNode->getProcessor()));
-    
+
     connectAudioNodes();
     connectMidiNodes();
 }

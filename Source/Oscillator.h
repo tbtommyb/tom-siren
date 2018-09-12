@@ -24,7 +24,12 @@ public:
 
 private:
     dsp::Oscillator<float> oscillator;
+    
     dsp::Oscillator<float> lfo;
+    static constexpr size_t lfoUpdateRate = 100;
+    size_t lfoUpdateCounter = lfoUpdateRate;
+    float lfoAmount;
+    
     const String identifier;
     const String name;
 };
