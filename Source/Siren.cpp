@@ -27,6 +27,7 @@ void Siren::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock) };
     processorChain.prepare (spec);
+    lfo.prepare (spec);
 }
 
 void Siren::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
@@ -37,6 +38,7 @@ void Siren::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
     dsp::AudioBlock<float> block (buffer);
     dsp::ProcessContextReplacing<float> context (block);
     
+    lfo.process (context);
     processorChain.process (context);
 }
 

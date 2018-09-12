@@ -19,8 +19,8 @@ TomSirenAudioProcessor::TomSirenAudioProcessor()
         mainProcessor(new AudioProcessorGraph()),
         parameters(*this, nullptr)
 {
-    parameters.createAndAddParameter("lfo_freq", "LFO Freq", String(), NormalisableRange<float>(0.1f, 1000.0f), 4.0f, nullptr, nullptr);
-    parameters.createAndAddParameter("lfo_amount", "LFO Amount", String(), NormalisableRange<float>(0.1f, 1000.0f), 4.0f, nullptr, nullptr);
+    parameters.createAndAddParameter("lfo_freq", "LFO Freq", String(), NormalisableRange<float>(0.1f, 100.0f), 4.0f, nullptr, nullptr);
+    parameters.createAndAddParameter("lfo_amount", "LFO Amount", String(), NormalisableRange<float>(0.1f, 100.0f), 4.0f, nullptr, nullptr);
     parameters.createAndAddParameter("base_freq", "Base Freq", String(), NormalisableRange<float>(20.0f, 2000.0f), 440.0f, nullptr, nullptr);
     parameters.state = ValueTree(Identifier("Dub"));
 }

@@ -33,6 +33,9 @@ TomSirenAudioProcessorEditor::TomSirenAudioProcessorEditor (TomSirenAudioProcess
     lfoFreqAttachment.reset(new SliderAttachment(valueTreeState, "lfo_freq", lfoFreq));
     lfoAmmountAttachment.reset(new SliderAttachment(valueTreeState, "lfo_amount", lfoAmount));
     baseFreqAttachment.reset(new SliderAttachment(valueTreeState, "base_freq", baseFreq));
+
+    lfoFreq.setSkewFactorFromMidPoint(20.0f);
+    lfoAmount.setSkewFactorFromMidPoint(20.0f);
 }
 
 TomSirenAudioProcessorEditor::~TomSirenAudioProcessorEditor() { }
