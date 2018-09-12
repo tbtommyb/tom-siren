@@ -33,8 +33,9 @@ void Siren::prepareToPlay(double sampleRate, int samplesPerBlock)
 void Siren::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
 {
     auto lfoOut = lfo.processSample(0.0f);
-
-    processorChain.template get<outputIndex>().setFrequency(baseFreq + (lfoOut * lfoAmount));
+    auto lfoFreq = jmap(lfoOut, -1.0f, 1.0f, 0.0f, lfoAmount);
+    
+    processorChain.template get<outputIndex>().setFrequency(baseFreq + lfoFreq);
     dsp::AudioBlock<float> block (buffer);
     dsp::ProcessContextReplacing<float> context (block);
     
