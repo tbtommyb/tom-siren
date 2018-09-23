@@ -99,6 +99,8 @@ void TomSirenAudioProcessor::initialiseGraph()
     
     parameters.addParameterListener("sine_lfo_freq", static_cast<Siren*>(baseNode->getProcessor()));
     parameters.addParameterListener("sine_lfo_amount", static_cast<Siren*>(baseNode->getProcessor()));
+    parameters.addParameterListener("saw_lfo_freq", static_cast<Siren*>(baseNode->getProcessor()));
+    parameters.addParameterListener("saw_lfo_amount", static_cast<Siren*>(baseNode->getProcessor()));
     parameters.addParameterListener("base_freq", static_cast<Siren*>(baseNode->getProcessor()));
 
     connectAudioNodes();

@@ -12,6 +12,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "ProcessorBase.h"
 #include "Distortion.h"
+#include "CustomOscillator.h"
 
 class Siren : public ProcessorBase, public AudioProcessorValueTreeState::Listener
 {
@@ -29,13 +30,18 @@ private:
         distortionIndex
     };
     dsp::ProcessorChain<dsp::Oscillator<float>, Distortion<float>> processorChain;
-    dsp::Oscillator<float> sineLFO;
+    CustomOscillator<float> sineLFO;
+    CustomOscillator<float> sawLFO;
         
     static constexpr size_t lfoUpdateRate = 100;
     size_t lfoUpdateCounter = lfoUpdateRate;
     
-    float lfoRate;
-    float lfoAmount;
+    float sineLFORate;
+    float sineLFOAmount;
+    
+    float sawLFORate;
+    float sawLFOAmount;
+
     float baseFreq;
     
     const String identifier;

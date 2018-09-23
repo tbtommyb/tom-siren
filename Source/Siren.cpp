@@ -17,35 +17,47 @@ Siren::Siren(const String& identifier, const String& name)
     processorChain.template get<outputIndex>().setFrequency(440.f);
     processorChain.template get<outputIndex>().initialise([] (float x) { return std::sin(x); }, 128);
     
-    sineLFO.initialise ([] (float x) { return std::sin (x); }, 128);
+    sineLFO.setWaveform(CustomOscillator<float>::Waveform::sine);
     sineLFO.setFrequency(4.0f);
-    lfoAmount = 4.0f;
+    
+    sawLFO.setWaveform(CustomOscillator<float>::Waveform::saw);
+    sawLFO.setFrequency(4.0f);
+    
+    sineLFOAmount = 4.0f;
+    sawLFOAmount = 4.0f;
     baseFreq = 440.0f;
 }
 
 void Siren::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock) };
-    processorChain.prepare (spec);
-    sineLFO.prepare (spec);
+    dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock), 2 };
+    sineLFO.prepare(spec);
+    sawLFO.prepare(spec);
+    processorChain.prepare(spec);
 }
 
 void Siren::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
 {
-    auto lfoOut = sineLFO.processSample(0.0f);
-    auto lfoFreq = jmap(lfoOut, -1.0f, 1.0f, 0.0f, lfoAmount);
+    auto sineLFOSample = sineLFO.processSample(0.0f);
+    auto sineLFOFreq = jmap(sineLFOSample, -1.0f, 1.0f, 0.0f, sineLFOAmount);
     
-    processorChain.template get<outputIndex>().setFrequency(baseFreq + lfoFreq);
+    auto sawLFOSample = sawLFO.processSample(0.0f);
+    auto sawLFOFreq = jmap(sawLFOSample, -1.0f, 1.0f, 0.0f, sawLFOAmount);
+    
+    processorChain.template get<outputIndex>().setFrequency(baseFreq + sineLFOFreq + sawLFOFreq);
     dsp::AudioBlock<float> block (buffer);
     dsp::ProcessContextReplacing<float> context (block);
     
-    sineLFO.process (context);
-    processorChain.process (context);
+    sineLFO.process(context);
+    sawLFO.process(context);
+    processorChain.process(context);
 }
 
 void Siren::reset()
 {
     processorChain.reset();
+    sineLFO.reset();
+    sawLFO.reset();
 }
 
 void Siren::parameterChanged(const String& parameterID, float newValue)
@@ -59,6 +71,14 @@ void Siren::parameterChanged(const String& parameterID, float newValue)
     }
     
     if (parameterID == "sine_lfo_amount") {
-        lfoAmount = newValue;
+        sineLFOAmount = newValue;
+    }
+    
+    if (parameterID == "saw_lfo_freq") {
+        sawLFO.setFrequency(newValue);
+    }
+    
+    if (parameterID == "saw_lfo_amount") {
+        sawLFOAmount = newValue;
     }
 }

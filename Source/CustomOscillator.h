@@ -73,6 +73,11 @@ public:
         processorChain.reset();
     }
     
+    Type processSample(Type input) noexcept
+    {
+        return processorChain.template get<oscIndex>().processSample(input);
+    }
+    
     //==============================================================================
     template <typename ProcessContext>
     void process (const ProcessContext& context) noexcept
