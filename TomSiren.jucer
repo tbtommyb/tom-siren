@@ -9,11 +9,8 @@
               id="FFavbB">
   <MAINGROUP id="b1E3nG" name="TomSiren">
     <GROUP id="{2F9E1AAE-E765-2AF7-03D2-2AD2D983A130}" name="Source">
-      <FILE id="lcPiEL" name="CustomOscillator.cpp" compile="1" resource="0"
-            file="Source/CustomOscillator.cpp"/>
       <FILE id="QAIZFt" name="CustomOscillator.h" compile="0" resource="0"
             file="Source/CustomOscillator.h"/>
-      <FILE id="WdtN2e" name="Distortion.cpp" compile="1" resource="0" file="Source/Distortion.cpp"/>
       <FILE id="dNZqSo" name="Distortion.h" compile="0" resource="0" file="Source/Distortion.h"/>
       <FILE id="OCnMSa" name="Siren.cpp" compile="1" resource="0" file="Source/Siren.cpp"/>
       <FILE id="RpVlzf" name="Siren.h" compile="0" resource="0" file="Source/Siren.h"/>
