@@ -22,7 +22,6 @@ public:
     void processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages) override;
     void reset() override;
     void parameterChanged(const String& parameterID, float newValue) override;
-
 private:
     enum {
         outputIndex,
@@ -34,10 +33,6 @@ private:
         
     static constexpr size_t lfoUpdateRate = 100;
     size_t lfoUpdateCounter = lfoUpdateRate;
-    
-    float sineRate, sineAmount, sawRate, sawAmount;
-
-    float baseFreq;
     
     const AudioProcessorValueTreeState& parameters;
 };

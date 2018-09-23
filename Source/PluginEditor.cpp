@@ -38,11 +38,11 @@ TomSirenAudioProcessorEditor::TomSirenAudioProcessorEditor (TomSirenAudioProcess
     addAndMakeVisible(baseFreqLbl);
     addAndMakeVisible(baseFreq);
     
-    sineFreqAttachment.reset(new SliderAttachment(valueTreeState, "sine_lfo_freq", sineFreq));
-    sineAmountAttachment.reset(new SliderAttachment(valueTreeState, "sine_lfo_amount", sineAmount));
+    sineFreqAttachment.reset(new SliderAttachment(valueTreeState, "sine_freq", sineFreq));
+    sineAmountAttachment.reset(new SliderAttachment(valueTreeState, "sine_amount", sineAmount));
 
-    sawFreqAttachment.reset(new SliderAttachment(valueTreeState, "saw_lfo_freq", sawFreq));
-    sawAmountAttachment.reset(new SliderAttachment(valueTreeState, "saw_lfo_amount", sawAmount));
+    sawFreqAttachment.reset(new SliderAttachment(valueTreeState, "saw_freq", sawFreq));
+    sawAmountAttachment.reset(new SliderAttachment(valueTreeState, "saw_amount", sawAmount));
 
     baseFreqAttachment.reset(new SliderAttachment(valueTreeState, "base_freq", baseFreq));
 

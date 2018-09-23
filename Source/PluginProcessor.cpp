@@ -19,10 +19,10 @@ TomSirenAudioProcessor::TomSirenAudioProcessor()
         mainProcessor(new AudioProcessorGraph()),
         parameters(*this, nullptr)
 {
-    parameters.createAndAddParameter("sine_lfo_freq", "Sine LFO Freq", String(), NormalisableRange<float>(0.01f, 100.0f), 4.0f, nullptr, nullptr);
-    parameters.createAndAddParameter("sine_lfo_amount", "Sine LFO Amount", String(), NormalisableRange<float>(0.01f, 1000.0f), 4.0f, nullptr, nullptr);
-    parameters.createAndAddParameter("saw_lfo_freq", "Saw LFO Amount", String(), NormalisableRange<float>(0.01f, 100.0f), 4.0f, nullptr, nullptr);
-    parameters.createAndAddParameter("saw_lfo_amount", "Saw LFO Amount", String(), NormalisableRange<float>(0.01f, 1000.0f), 4.0f, nullptr, nullptr);
+    parameters.createAndAddParameter("sine_freq", "Sine LFO Freq", String(), NormalisableRange<float>(0.01f, 100.0f), 4.0f, nullptr, nullptr);
+    parameters.createAndAddParameter("sine_amount", "Sine LFO Amount", String(), NormalisableRange<float>(0.01f, 1000.0f), 4.0f, nullptr, nullptr);
+    parameters.createAndAddParameter("saw_freq", "Saw LFO Amount", String(), NormalisableRange<float>(0.01f, 100.0f), 4.0f, nullptr, nullptr);
+    parameters.createAndAddParameter("saw_amount", "Saw LFO Amount", String(), NormalisableRange<float>(0.01f, 1000.0f), 4.0f, nullptr, nullptr);
     parameters.createAndAddParameter("base_freq", "Base Freq", String(), NormalisableRange<float>(20.0f, 2000.0f), 440.0f, nullptr, nullptr);
     parameters.state = ValueTree(Identifier("TomSiren"));
 }
@@ -54,7 +54,7 @@ void TomSirenAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
 void TomSirenAudioProcessor::releaseResources()
 {
-    for (auto paramID : paramIDs) {
+    for (auto paramID : freqParamIDs) {
         parameters.removeParameterListener(paramID, static_cast<Siren*>(baseNode->getProcessor()));
     }
 
@@ -95,7 +95,7 @@ void TomSirenAudioProcessor::initialiseGraph()
     
     baseNode->getProcessor()->enableAllBuses();
     
-    for (auto paramID : paramIDs) {
+    for (auto paramID : freqParamIDs) {
         parameters.addParameterListener(paramID, static_cast<Siren*>(baseNode->getProcessor()));
     }
 
