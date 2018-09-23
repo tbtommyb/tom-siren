@@ -32,29 +32,16 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     TomSirenAudioProcessor& processor;
-    
-    // TODO listen to UI events, update valueTreeState with params
-    // LFO rate, LFO amp, base freq etc
+
     AudioProcessorValueTreeState& valueTreeState;
     
-    Label sineLFOFreqLabel;
-    Slider sineLFOFreq;
-    std::unique_ptr<SliderAttachment> sineLFOFreqAttachment;
-    
-    Label sineLFOAmountLabel;
-    Slider sineLFOAmount;
-    std::unique_ptr<SliderAttachment> sineLFOAmountAttachment;
-    
-    Label sawLFOFreqLabel;
-    Slider sawLFOFreq;
-    std::unique_ptr<SliderAttachment> sawLFOFreqAttachment;
-    
-    Label sawLFOAmountLabel;
-    Slider sawLFOAmount;
-    std::unique_ptr<SliderAttachment> sawLFOAmountAttachment;
-    
-    Label baseFreqLabel;
-    Slider baseFreq;
+    Label sineFreqLbl, sineAmountLbl, sawFreqLbl, sawAmountLbl, baseFreqLbl;
+    Slider sineFreq, sineAmount, sawFreq, sawAmount, baseFreq;
+
+    std::unique_ptr<SliderAttachment> sineFreqAttachment;
+    std::unique_ptr<SliderAttachment> sineAmountAttachment;
+    std::unique_ptr<SliderAttachment> sawFreqAttachment;
+    std::unique_ptr<SliderAttachment> sawAmountAttachment;
     std::unique_ptr<SliderAttachment> baseFreqAttachment;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TomSirenAudioProcessorEditor)

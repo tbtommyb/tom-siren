@@ -62,7 +62,13 @@ private:
     AudioProcessorGraph::Node::Ptr midiOutputNode;
     
     AudioProcessorValueTreeState parameters;
-    
+    std::vector<std::string> paramIDs = {
+        "sine_lfo_freq",
+        "sine_lfo_amount",
+        "saw_lfo_freq",
+        "saw_lfo_amount",
+        "base_freq"
+    };
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TomSirenAudioProcessor)
 };

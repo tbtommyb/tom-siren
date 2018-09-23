@@ -17,40 +17,40 @@ TomSirenAudioProcessorEditor::TomSirenAudioProcessorEditor (TomSirenAudioProcess
 {
     setSize (400, 300);
     
-    sineLFOFreqLabel.setText("LFO Freq", dontSendNotification);
-    sineLFOAmountLabel.setText("LFO Amount", dontSendNotification);
-    sawLFOFreqLabel.setText("Saw Freq", dontSendNotification);
-    sawLFOAmountLabel.setText("Saw Amount", dontSendNotification);
-    baseFreqLabel.setText("Base Freq", dontSendNotification);
+    sineFreqLbl.setText("LFO Freq", dontSendNotification);
+    sineAmountLbl.setText("LFO Amount", dontSendNotification);
+    sawFreqLbl.setText("Saw Freq", dontSendNotification);
+    sawAmountLbl.setText("Saw Amount", dontSendNotification);
+    baseFreqLbl.setText("Base Freq", dontSendNotification);
     
-    addAndMakeVisible(sineLFOFreqLabel);
-    addAndMakeVisible(sineLFOFreq);
+    addAndMakeVisible(sineFreqLbl);
+    addAndMakeVisible(sineFreq);
 
-    addAndMakeVisible(sineLFOAmountLabel);
-    addAndMakeVisible(sineLFOAmount);
+    addAndMakeVisible(sineAmountLbl);
+    addAndMakeVisible(sineAmount);
     
-    addAndMakeVisible(sawLFOFreqLabel);
-    addAndMakeVisible(sawLFOFreq);
+    addAndMakeVisible(sawFreqLbl);
+    addAndMakeVisible(sawFreq);
 
-    addAndMakeVisible(sawLFOAmountLabel);
-    addAndMakeVisible(sawLFOAmount);
+    addAndMakeVisible(sawAmountLbl);
+    addAndMakeVisible(sawAmount);
     
-    addAndMakeVisible(baseFreqLabel);
+    addAndMakeVisible(baseFreqLbl);
     addAndMakeVisible(baseFreq);
     
-    sineLFOFreqAttachment.reset(new SliderAttachment(valueTreeState, "sine_lfo_freq", sineLFOFreq));
-    sineLFOAmountAttachment.reset(new SliderAttachment(valueTreeState, "sine_lfo_amount", sineLFOAmount));
+    sineFreqAttachment.reset(new SliderAttachment(valueTreeState, "sine_lfo_freq", sineFreq));
+    sineAmountAttachment.reset(new SliderAttachment(valueTreeState, "sine_lfo_amount", sineAmount));
 
-    sawLFOFreqAttachment.reset(new SliderAttachment(valueTreeState, "saw_lfo_freq", sawLFOFreq));
-    sawLFOAmountAttachment.reset(new SliderAttachment(valueTreeState, "saw_lfo_amount", sawLFOAmount));
+    sawFreqAttachment.reset(new SliderAttachment(valueTreeState, "saw_lfo_freq", sawFreq));
+    sawAmountAttachment.reset(new SliderAttachment(valueTreeState, "saw_lfo_amount", sawAmount));
 
     baseFreqAttachment.reset(new SliderAttachment(valueTreeState, "base_freq", baseFreq));
 
-    sineLFOFreq.setSkewFactorFromMidPoint(20.0f);
-    sineLFOAmount.setSkewFactorFromMidPoint(300.0f);
+    sineFreq.setSkewFactorFromMidPoint(20.0f);
+    sineAmount.setSkewFactorFromMidPoint(300.0f);
     
-    sawLFOFreq.setSkewFactorFromMidPoint(20.0f);
-    sawLFOAmount.setSkewFactorFromMidPoint(300.0f);
+    sawFreq.setSkewFactorFromMidPoint(20.0f);
+    sawAmount.setSkewFactorFromMidPoint(300.0f);
 
     baseFreq.setSkewFactorFromMidPoint(500.f);
 }
@@ -67,26 +67,27 @@ void TomSirenAudioProcessorEditor::paint (Graphics& g)
 void TomSirenAudioProcessorEditor::resized()
 {
     auto r = getLocalBounds();
-    
-    // TODO find the proper way to do this
-    auto sineLFORect = r.removeFromTop(40);
-    sineLFOFreqLabel.setBounds(sineLFORect.removeFromLeft(80));
-    sineLFOFreq.setBounds(sineLFORect);
 
-    auto sineLFOAmountRect = r.removeFromTop(60);
-    sineLFOAmountLabel.setBounds(sineLFOAmountRect.removeFromLeft(80));
-    sineLFOAmount.setBounds(sineLFOAmountRect);
-    
-    auto sawLFORect = r.removeFromTop(80);
-    sawLFOFreqLabel.setBounds(sawLFORect.removeFromLeft(80));
-    sawLFOFreq.setBounds(sawLFORect);
-    
-    auto sawLFOAmountRect = r.removeFromTop(60);
-    sawLFOAmountLabel.setBounds(sawLFOAmountRect.removeFromLeft(80));
-    sawLFOAmount.setBounds(sawLFOAmountRect);
-    
-    auto baseRect = r.removeFromTop(100);
-    baseFreqLabel.setBounds(baseRect.removeFromLeft(80));
+    auto sliderHeight = 60;
+    auto labelMargin = 80;
+
+    auto baseRect = r.removeFromTop(sliderHeight);
+    baseFreqLbl.setBounds(baseRect.removeFromLeft(labelMargin));
     baseFreq.setBounds(baseRect);
+
+    auto sineLFORect = r.removeFromTop(sliderHeight);
+    sineFreqLbl.setBounds(sineLFORect.removeFromLeft(labelMargin));
+    sineFreq.setBounds(sineLFORect);
+
+    auto sineLFOAmountRect = r.removeFromTop(sliderHeight);
+    sineAmountLbl.setBounds(sineLFOAmountRect.removeFromLeft(labelMargin));
+    sineAmount.setBounds(sineLFOAmountRect);
     
+    auto sawLFORect = r.removeFromTop(sliderHeight);
+    sawFreqLbl.setBounds(sawLFORect.removeFromLeft(labelMargin));
+    sawFreq.setBounds(sawLFORect);
+    
+    auto sawLFOAmountRect = r.removeFromTop(sliderHeight);
+    sawAmountLbl.setBounds(sawLFOAmountRect.removeFromLeft(labelMargin));
+    sawAmount.setBounds(sawLFOAmountRect);
 }

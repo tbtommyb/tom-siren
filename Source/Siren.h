@@ -17,8 +17,7 @@
 class Siren : public ProcessorBase, public AudioProcessorValueTreeState::Listener
 {
 public:
-    Siren(const String& identifier, const String& name);
-    const String getName() const override { return name; }
+    Siren(const AudioProcessorValueTreeState& parameters);
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages) override;
     void reset() override;
@@ -36,14 +35,9 @@ private:
     static constexpr size_t lfoUpdateRate = 100;
     size_t lfoUpdateCounter = lfoUpdateRate;
     
-    float sineLFORate;
-    float sineLFOAmount;
-    
-    float sawLFORate;
-    float sawLFOAmount;
+    float sineRate, sineAmount, sawRate, sawAmount;
 
     float baseFreq;
     
-    const String identifier;
-    const String name;
+    const AudioProcessorValueTreeState& parameters;
 };

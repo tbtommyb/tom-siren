@@ -24,7 +24,7 @@ TomSirenAudioProcessor::TomSirenAudioProcessor()
     parameters.createAndAddParameter("saw_lfo_freq", "Saw LFO Amount", String(), NormalisableRange<float>(0.01f, 100.0f), 4.0f, nullptr, nullptr);
     parameters.createAndAddParameter("saw_lfo_amount", "Saw LFO Amount", String(), NormalisableRange<float>(0.01f, 1000.0f), 4.0f, nullptr, nullptr);
     parameters.createAndAddParameter("base_freq", "Base Freq", String(), NormalisableRange<float>(20.0f, 2000.0f), 440.0f, nullptr, nullptr);
-    parameters.state = ValueTree(Identifier("Dub"));
+    parameters.state = ValueTree(Identifier("TomSiren"));
 }
 
 TomSirenAudioProcessor::~TomSirenAudioProcessor() { }
@@ -54,10 +54,10 @@ void TomSirenAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
 void TomSirenAudioProcessor::releaseResources()
 {
-    auto* siren = static_cast<Siren*>(baseNode->getProcessor());
-    parameters.removeParameterListener("sine_lfo_freq", siren);
-    parameters.removeParameterListener("sine_lfo_amount", siren);
-    parameters.removeParameterListener("base_freq", siren);
+    for (auto paramID : paramIDs) {
+        parameters.removeParameterListener(paramID, static_cast<Siren*>(baseNode->getProcessor()));
+    }
+
     mainProcessor->releaseResources();
 }
 
@@ -85,23 +85,19 @@ void TomSirenAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffe
 
 void TomSirenAudioProcessor::initialiseGraph()
 {
-    // pass parameter ID into Oscillator so it knows what to listen for
-    // LFO doesn't need to be part of audio graph
     mainProcessor->clear();
     
     audioOutputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::audioOutputNode));
     midiInputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::midiInputNode));
     midiOutputNode = mainProcessor->addNode(new AudioGraphIOProcessor(AudioGraphIOProcessor::midiOutputNode));
     
-    baseNode = mainProcessor->addNode(new Siren("base_freq", "Base Freq"));
+    baseNode = mainProcessor->addNode(new Siren{parameters});
     
     baseNode->getProcessor()->enableAllBuses();
     
-    parameters.addParameterListener("sine_lfo_freq", static_cast<Siren*>(baseNode->getProcessor()));
-    parameters.addParameterListener("sine_lfo_amount", static_cast<Siren*>(baseNode->getProcessor()));
-    parameters.addParameterListener("saw_lfo_freq", static_cast<Siren*>(baseNode->getProcessor()));
-    parameters.addParameterListener("saw_lfo_amount", static_cast<Siren*>(baseNode->getProcessor()));
-    parameters.addParameterListener("base_freq", static_cast<Siren*>(baseNode->getProcessor()));
+    for (auto paramID : paramIDs) {
+        parameters.addParameterListener(paramID, static_cast<Siren*>(baseNode->getProcessor()));
+    }
 
     connectAudioNodes();
     connectMidiNodes();

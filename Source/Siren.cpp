@@ -11,26 +11,29 @@
 #include "Siren.h"
 #include <iostream>
 
-Siren::Siren(const String& identifier, const String& name)
-: identifier(identifier), name(name)
+Siren::Siren(const AudioProcessorValueTreeState& parameters)
+: parameters(parameters)
 {
-    processorChain.template get<outputIndex>().setFrequency(440.f);
+    auto* baseFreq = parameters.getRawParameterValue("base_freq");
+    processorChain.template get<outputIndex>().setFrequency(*baseFreq);
     processorChain.template get<outputIndex>().initialise([] (float x) { return std::sin(x); }, 128);
     
     sineLFO.setWaveform(CustomOscillator<float>::Waveform::sine);
     sineLFO.setFrequency(4.0f);
+    sineLFO.setLevel(0.0f);
     
     sawLFO.setWaveform(CustomOscillator<float>::Waveform::saw);
     sawLFO.setFrequency(4.0f);
+    sawLFO.setLevel(0.0f);
     
-    sineLFOAmount = 4.0f;
-    sawLFOAmount = 4.0f;
-    baseFreq = 440.0f;
+    sineAmount = 4.0f;
+    sawAmount = 4.0f;
 }
 
 void Siren::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock), 2 };
+
     sineLFO.prepare(spec);
     sawLFO.prepare(spec);
     processorChain.prepare(spec);
@@ -38,13 +41,15 @@ void Siren::prepareToPlay(double sampleRate, int samplesPerBlock)
 
 void Siren::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
 {
-    auto sineLFOSample = sineLFO.processSample(0.0f);
-    auto sineLFOFreq = jmap(sineLFOSample, -1.0f, 1.0f, 0.0f, sineLFOAmount);
+    auto* baseFreq = parameters.getRawParameterValue("base_freq");
+
+    auto sineSample = sineLFO.processSample(0.0f);
+    auto sineFreq = jmap(sineSample, -1.0f, 1.0f, 0.0f, sineAmount);
     
-    auto sawLFOSample = sawLFO.processSample(0.0f);
-    auto sawLFOFreq = jmap(sawLFOSample, -1.0f, 1.0f, 0.0f, sawLFOAmount);
+    auto sawSample = sawLFO.processSample(0.0f);
+    auto sawFreq = jmap(sawSample, -1.0f, 1.0f, 0.0f, sawAmount);
     
-    processorChain.template get<outputIndex>().setFrequency(baseFreq + sineLFOFreq + sawLFOFreq);
+    processorChain.template get<outputIndex>().setFrequency(*baseFreq + sineFreq + sawFreq);
     dsp::AudioBlock<float> block (buffer);
     dsp::ProcessContextReplacing<float> context (block);
     
@@ -64,21 +69,13 @@ void Siren::parameterChanged(const String& parameterID, float newValue)
 {
     if (parameterID == "base_freq") {
         baseFreq = newValue;
-    }
-    
-    if (parameterID == "sine_lfo_freq") {
+    } else if (parameterID == "sine_lfo_freq") {
         sineLFO.setFrequency(newValue);
-    }
-    
-    if (parameterID == "sine_lfo_amount") {
-        sineLFOAmount = newValue;
-    }
-    
-    if (parameterID == "saw_lfo_freq") {
+    } else if (parameterID == "sine_lfo_amount") {
+        sineAmount = newValue;
+    } else if (parameterID == "saw_lfo_freq") {
         sawLFO.setFrequency(newValue);
-    }
-    
-    if (parameterID == "saw_lfo_amount") {
-        sawLFOAmount = newValue;
+    } else if (parameterID == "saw_lfo_amount") {
+        sawAmount = newValue;
     }
 }
