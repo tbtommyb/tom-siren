@@ -29,7 +29,7 @@ private:
         distortionIndex
     };
     dsp::ProcessorChain<dsp::Oscillator<float>, Distortion<float>> processorChain;
-    dsp::Oscillator<float> lfo;
+    dsp::Oscillator<float> sineLFO;
         
     static constexpr size_t lfoUpdateRate = 100;
     size_t lfoUpdateCounter = lfoUpdateRate;

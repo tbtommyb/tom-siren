@@ -17,8 +17,8 @@ Siren::Siren(const String& identifier, const String& name)
     processorChain.template get<outputIndex>().setFrequency(440.f);
     processorChain.template get<outputIndex>().initialise([] (float x) { return std::sin(x); }, 128);
     
-    lfo.initialise ([] (float x) { return std::sin (x); }, 128);
-    lfo.setFrequency(4.0f);
+    sineLFO.initialise ([] (float x) { return std::sin (x); }, 128);
+    sineLFO.setFrequency(4.0f);
     lfoAmount = 4.0f;
     baseFreq = 440.0f;
 }
@@ -27,19 +27,19 @@ void Siren::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock) };
     processorChain.prepare (spec);
-    lfo.prepare (spec);
+    sineLFO.prepare (spec);
 }
 
 void Siren::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
 {
-    auto lfoOut = lfo.processSample(0.0f);
+    auto lfoOut = sineLFO.processSample(0.0f);
     auto lfoFreq = jmap(lfoOut, -1.0f, 1.0f, 0.0f, lfoAmount);
     
     processorChain.template get<outputIndex>().setFrequency(baseFreq + lfoFreq);
     dsp::AudioBlock<float> block (buffer);
     dsp::ProcessContextReplacing<float> context (block);
     
-    lfo.process (context);
+    sineLFO.process (context);
     processorChain.process (context);
 }
 
@@ -54,11 +54,11 @@ void Siren::parameterChanged(const String& parameterID, float newValue)
         baseFreq = newValue;
     }
     
-    if (parameterID == "lfo_freq") {
-        lfo.setFrequency(newValue);
+    if (parameterID == "sine_lfo_freq") {
+        sineLFO.setFrequency(newValue);
     }
     
-    if (parameterID == "lfo_amount") {
+    if (parameterID == "sine_lfo_amount") {
         lfoAmount = newValue;
     }
 }

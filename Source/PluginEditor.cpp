@@ -17,25 +17,41 @@ TomSirenAudioProcessorEditor::TomSirenAudioProcessorEditor (TomSirenAudioProcess
 {
     setSize (400, 300);
     
-    lfoFreqLabel.setText("LFO Freq", dontSendNotification);
-    lfoAmountLabel.setText("LFO Amount", dontSendNotification);
+    sineLFOFreqLabel.setText("LFO Freq", dontSendNotification);
+    sineLFOAmountLabel.setText("LFO Amount", dontSendNotification);
+    sawLFOFreqLabel.setText("Saw Freq", dontSendNotification);
+    sawLFOAmountLabel.setText("Saw Amount", dontSendNotification);
     baseFreqLabel.setText("Base Freq", dontSendNotification);
     
-    addAndMakeVisible(lfoFreqLabel);
-    addAndMakeVisible(lfoFreq);
+    addAndMakeVisible(sineLFOFreqLabel);
+    addAndMakeVisible(sineLFOFreq);
 
-    addAndMakeVisible(lfoAmountLabel);
-    addAndMakeVisible(lfoAmount);
+    addAndMakeVisible(sineLFOAmountLabel);
+    addAndMakeVisible(sineLFOAmount);
+    
+    addAndMakeVisible(sawLFOFreqLabel);
+    addAndMakeVisible(sawLFOFreq);
 
+    addAndMakeVisible(sawLFOAmountLabel);
+    addAndMakeVisible(sawLFOAmount);
+    
     addAndMakeVisible(baseFreqLabel);
     addAndMakeVisible(baseFreq);
     
-    lfoFreqAttachment.reset(new SliderAttachment(valueTreeState, "lfo_freq", lfoFreq));
-    lfoAmmountAttachment.reset(new SliderAttachment(valueTreeState, "lfo_amount", lfoAmount));
+    sineLFOFreqAttachment.reset(new SliderAttachment(valueTreeState, "sine_lfo_freq", sineLFOFreq));
+    sineLFOAmountAttachment.reset(new SliderAttachment(valueTreeState, "sine_lfo_amount", sineLFOAmount));
+
+    sawLFOFreqAttachment.reset(new SliderAttachment(valueTreeState, "saw_lfo_freq", sawLFOFreq));
+    sawLFOAmountAttachment.reset(new SliderAttachment(valueTreeState, "saw_lfo_amount", sawLFOAmount));
+
     baseFreqAttachment.reset(new SliderAttachment(valueTreeState, "base_freq", baseFreq));
 
-    lfoFreq.setSkewFactorFromMidPoint(20.0f);
-    lfoAmount.setSkewFactorFromMidPoint(300.0f);
+    sineLFOFreq.setSkewFactorFromMidPoint(20.0f);
+    sineLFOAmount.setSkewFactorFromMidPoint(300.0f);
+    
+    sawLFOFreq.setSkewFactorFromMidPoint(20.0f);
+    sawLFOAmount.setSkewFactorFromMidPoint(300.0f);
+
     baseFreq.setSkewFactorFromMidPoint(500.f);
 }
 
@@ -52,13 +68,22 @@ void TomSirenAudioProcessorEditor::resized()
 {
     auto r = getLocalBounds();
     
-    auto lfoRect = r.removeFromTop(40);
-    lfoFreqLabel.setBounds(lfoRect.removeFromLeft(80));
-    lfoFreq.setBounds(lfoRect);
     // TODO find the proper way to do this
-    auto lfoAmountRect = r.removeFromTop(60);
-    lfoAmountLabel.setBounds(lfoAmountRect.removeFromLeft(80));
-    lfoAmount.setBounds(lfoAmountRect);
+    auto sineLFORect = r.removeFromTop(40);
+    sineLFOFreqLabel.setBounds(sineLFORect.removeFromLeft(80));
+    sineLFOFreq.setBounds(sineLFORect);
+
+    auto sineLFOAmountRect = r.removeFromTop(60);
+    sineLFOAmountLabel.setBounds(sineLFOAmountRect.removeFromLeft(80));
+    sineLFOAmount.setBounds(sineLFOAmountRect);
+    
+    auto sawLFORect = r.removeFromTop(80);
+    sawLFOFreqLabel.setBounds(sawLFORect.removeFromLeft(80));
+    sawLFOFreq.setBounds(sawLFORect);
+    
+    auto sawLFOAmountRect = r.removeFromTop(60);
+    sawLFOAmountLabel.setBounds(sawLFOAmountRect.removeFromLeft(80));
+    sawLFOAmount.setBounds(sawLFOAmountRect);
     
     auto baseRect = r.removeFromTop(100);
     baseFreqLabel.setBounds(baseRect.removeFromLeft(80));

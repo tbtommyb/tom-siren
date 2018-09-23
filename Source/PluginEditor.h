@@ -37,13 +37,21 @@ private:
     // LFO rate, LFO amp, base freq etc
     AudioProcessorValueTreeState& valueTreeState;
     
-    Label lfoFreqLabel;
-    Slider lfoFreq;
-    std::unique_ptr<SliderAttachment> lfoFreqAttachment;
+    Label sineLFOFreqLabel;
+    Slider sineLFOFreq;
+    std::unique_ptr<SliderAttachment> sineLFOFreqAttachment;
     
-    Label lfoAmountLabel;
-    Slider lfoAmount;
-    std::unique_ptr<SliderAttachment> lfoAmmountAttachment;
+    Label sineLFOAmountLabel;
+    Slider sineLFOAmount;
+    std::unique_ptr<SliderAttachment> sineLFOAmountAttachment;
+    
+    Label sawLFOFreqLabel;
+    Slider sawLFOFreq;
+    std::unique_ptr<SliderAttachment> sawLFOFreqAttachment;
+    
+    Label sawLFOAmountLabel;
+    Slider sawLFOAmount;
+    std::unique_ptr<SliderAttachment> sawLFOAmountAttachment;
     
     Label baseFreqLabel;
     Slider baseFreq;
