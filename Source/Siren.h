@@ -27,9 +27,15 @@ private:
         outputIndex,
         distortionIndex
     };
+    juce::HeapBlock<char> heapBlock;
+    juce::dsp::AudioBlock<float> tempBlock;
+    
     dsp::ProcessorChain<dsp::Oscillator<float>, Distortion<float>> processorChain;
     CustomOscillator<float> sineLFO;
     CustomOscillator<float> sawLFO;
+        
+    static constexpr size_t lfoUpdateRate = 100;
+    size_t lfoUpdateCounter = lfoUpdateRate;
     
     const AudioProcessorValueTreeState& parameters;
 };
