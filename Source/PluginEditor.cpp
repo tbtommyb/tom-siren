@@ -17,8 +17,8 @@ TomSirenAudioProcessorEditor::TomSirenAudioProcessorEditor (TomSirenAudioProcess
 {
     setSize (400, 300);
     
-    sineFreqLbl.setText("LFO Freq", dontSendNotification);
-    sineAmountLbl.setText("LFO Amount", dontSendNotification);
+    sineFreqLbl.setText("Sine Freq", dontSendNotification);
+    sineAmountLbl.setText("Sine Amount", dontSendNotification);
     sawFreqLbl.setText("Saw Freq", dontSendNotification);
     sawAmountLbl.setText("Saw Amount", dontSendNotification);
     baseFreqLbl.setText("Base Freq", dontSendNotification);

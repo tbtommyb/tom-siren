@@ -31,10 +31,11 @@ Siren::Siren(const AudioProcessorValueTreeState& parameters)
 void Siren::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock), 2 };
-
-    sineLFO.prepare(spec);
-    sawLFO.prepare(spec);
+    
     processorChain.prepare(spec);
+
+    sineLFO.prepare({ spec.sampleRate / lfoUpdateRate, spec.maximumBlockSize, spec.numChannels });
+    sawLFO.prepare({ spec.sampleRate / lfoUpdateRate, spec.maximumBlockSize, spec.numChannels });
 }
 
 void Siren::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
@@ -43,19 +44,23 @@ void Siren::processBlock (AudioSampleBuffer& buffer, MidiBuffer&)
     auto* sineAmount = parameters.getRawParameterValue("sine_amount");
     auto* sawAmount = parameters.getRawParameterValue("saw_amount");
 
-    auto sineSample = sineLFO.processSample(0.0f);
-    auto sineFreq = jmap(sineSample, -1.0f, 1.0f, 0.0f, *sineAmount);
+    auto numSamples = buffer.getNumSamples();
+    for (size_t pos = 0; pos < numSamples; pos++) {
+        if (--lfoUpdateCounter == 0) {
+            lfoUpdateCounter = lfoUpdateRate;
+            auto sineSample = sineLFO.processSample(0.0f);
+            auto sineFreq = jmap(sineSample, -1.0f, 1.0f, 0.0f, *sineAmount);
+            
+            auto sawSample = sawLFO.processSample(0.0f);
+            auto sawFreq = jmap(sawSample, -1.0f, 1.0f, 0.0f, *sawAmount);
+            
+            processorChain.template get<outputIndex>().setFrequency(*baseFreq + sineFreq + sawFreq);
+        }
+    }
     
-    auto sawSample = sawLFO.processSample(0.0f);
-    auto sawFreq = jmap(sawSample, -1.0f, 1.0f, 0.0f, *sawAmount);
-    
-    processorChain.template get<outputIndex>().setFrequency(*baseFreq + sineFreq + sawFreq);
     dsp::AudioBlock<float> block (buffer);
-    dsp::ProcessContextReplacing<float> context (block);
-    
-    sineLFO.process(context);
-    sawLFO.process(context);
-    processorChain.process(context);
+    dsp::ProcessContextReplacing<float> processorContext (block);
+    processorChain.process(processorContext);
 }
 
 void Siren::reset()
